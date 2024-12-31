@@ -1,35 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour {
 
     [SerializeField] private float speedMC = 3f;
     private Rigidbody2D rb;
     private Vector2 MovementDirection;
+    private PlayerInput playerInput;
+    private Vector2 Input;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+	playerInput = GetComponent<PlayerInput>();
     }
 
     void Update()
     {
-    //En caso de querer un efecto de deslizamiento manipular las variables de gravedad y sensibilidad
-    //Para ello se debe ir a Edit > Project Settings > Input Manager
-     	float MoveX = Input.GetAxisRaw("Horizontal");
-     	float MoveY = Input.GetAxisRaw("Vertical"); 
-     	
-     	//Recordar que el movimiento debe hacerse con Input.GetAxisRaw("")
-     	//Para evitar sobrescritura en los ejes
-     	
-        MovementDirection = new Vector2(MoveX,MoveY).normalized;
-
+	Input = playerInput.actions["Move"].ReadValue<Vector2>();
     }
 
     void FixedUpdate()
     {
-    	Vector2 newPosition = rb.position + MovementDirection * speedMC * Time.fixedDeltaTime;
+    	Vector2 newPosition = rb.position + Input * speedMC * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
     }
 }
