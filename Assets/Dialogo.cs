@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using TMPro;
 
 public class Dialogo : MonoBehaviour
 
 {
+    private PlayerInput playerInput;
     private bool PlayerTrigger; //Detecta cuando el BoxCollider del NPC detecta el del jugador
     private bool DialogueStart; //Boleando para saber si se esta ejecutando un dialogo o no
     private int LineIndex; //Indica cual linea de dialogo se esta ejecutando
@@ -12,25 +14,20 @@ public class Dialogo : MonoBehaviour
     [SerializeField] private GameObject DialoguePanel;
     [SerializeField] private TMP_Text DialogueText; 
     [SerializeField] private float Seconds;
-    
-    void Update()
+
+    public void InteractionNPC(InputAction.CallbackContext context) //Si se activa, pero no hara nada si esta cerca del jugador
     {
-        if(PlayerTrigger && Input.GetButtonDown("Fire1")) //Se activa el dialogo con el click izquierdo o ctrl
+	if(PlayerTrigger && context.started) //Solo se activa cuando se detecta cerca cel NPC correspondiente y la fase aplicada es Started 
 	{
-		if(!DialogueStart) 
+		if(!DialogueStart) //Inicia dialogo cuando no se tenga uno presente
 		{
 			StartDialogue();
 		}
-		else if (DialogueText.text == dialogueLines[LineIndex]) //Cuando acaba una linea de dialogo se carga la siguiente
+		else if (DialogueText.text == dialogueLines[LineIndex]) //Se activa cuando presentamos 
 		{
-			ShowNextLine();
+			ShowNextLine(); //Presentamos la siguiente linea con esta subrutina
 		}
-		else //En caso de que no queramos que se escriban las letras una por una volvemos a presionar el boton de accion y mostrara el dialogo completo
-		{
-			StopAllCoroutines();
-			DialogueText.text = dialogueLines[LineIndex];
-		}
-	}    
+	}
     }
 
 
@@ -71,7 +68,6 @@ public class Dialogo : MonoBehaviour
 	if (collision.gameObject.CompareTag("Player"))
 	{
 		PlayerTrigger = true;
-		Debug.Log("Hola");
 	}
     }
 
@@ -81,7 +77,6 @@ public class Dialogo : MonoBehaviour
 	if (collision.gameObject.CompareTag("Player"))
          {
         	PlayerTrigger = false;
-		Debug.Log("Adios");
          }
     }
 
